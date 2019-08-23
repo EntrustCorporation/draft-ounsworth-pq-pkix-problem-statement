@@ -1,0 +1,38 @@
+# Problem statement for multi-key mechanisms in PKIX to address the Post-Quantum transition
+
+
+## Setting up a build environment
+
+There may be a way to do this in cygwin, but I cut losses and did it in ubuntu:
+
+    $ sudo apt-get install ruby-full
+    $ sudo gem install kramdown-rfc2629
+    $ sudo apt-get install xml2rfc
+
+
+## Using the makefile
+
+We have provided a makefile to build the draft in either pure TXT, or fancy HTML formats:
+
+    $ make txt
+    or
+    $ make html
+
+The default target will build both:
+
+    $ make
+
+## Building the document from markdown
+
+    // to build straight to an RFC-style .txt:
+    $ kdrfc draft-ounsworth-pq-pkix-problem-statement.mkd
+
+    // to produce the intermediary .xml for use with other IETF tools:
+    $ kramdown-rfc2629 draft-ounsworth-pq-pkix-problem-statement.mkd > draft-ounsworth-pq-pkix-problem-statement.xml
+
+    // to produce HTML (which has links in the ToC!) use this:
+    $ xml2rfc draft-ounsworth-pq-pkix-problem-statement.xml --basename draft-ounsworth-pq-pkix-problem-statement --html
+
+## Editing Etiquette
+
+When checking in changes to the document source (`.mkd`), please also check in the modified `.txt` for those who wish to review changes (diffs) in their browser.
