@@ -77,7 +77,7 @@ Table of Contents
    4.  Intellectual Property Considerations  . . . . . . . . . . . .   7
    5.  Contributors and Acknowledgements . . . . . . . . . . . . . .   7
    6.  Informative References  . . . . . . . . . . . . . . . . . . .   7
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   8
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   7
 
 1.  Problem Statement
 
@@ -340,35 +340,20 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
 
 4.  Intellectual Property Considerations
 
-   The authors are aware that Massimiliano Pala and CableLabs have
-   applied for Intellectual Property Rights around composite key,
-   signatures, and certificates.  We have a verbal agreement with Max
-   that this IP will be made freely available to the community.
+   Hybrid certificates, specifically [draft-truskovsky-lamps-pq-hybrid-
+   x509] has IPR held by ISARA.
 
-   As of this version of the draft, the authors have reviewed and
-   provided feedback on the March 24, 2019 version of the IPR
-   disclosure, available at https://datatracker.ietf.org/ipr/3481/, and
-   are awaiting the posting of an updated version that covers this
-   draft.
-
-   EDNOTE: remove this section once the IPR disclosure is posted and
-   tagged against this draft.
+   Composite certificates, specifically [draft-ounsworth-pq-composite-
+   sigs] has IPR held by Max Pala and CableLabs, but with open license
+   terms, available at https://datatracker.ietf.org/ipr/3481/, and are
+   awaiting the posting of an updated version that covers this draft.
 
 5.  Contributors and Acknowledgements
 
    This document incorporates contributions and comments from a large
-   group of experts.  The Editors would especially like to acknowledge
-   the expertise and tireless dedication of the following people, who
-   attended many long meetings and generated millions of bytes of
-   electronic mail and VOIP traffic over the past year in pursuit of
-   this document:
-
-   John Gray (Entrust Datacard), Serge Mister (Entrust Datacard), Scott
-   Fluhrer (Cisco Systems), Panos Kampanakis (Cisco Systems), Daniel Van
-   Geest (ISARA), and Tim Hollebeek (Digicert).
-
-   We are grateful to all, including any contributors who may have been
-   inadvertently omitted from this list.
+   group of experts, including the authors list of [draft-ounsworth-pq-
+   composite-sigs] and hallway chats at IETF105 and other crypto
+   conferences.
 
    This document borrows text from similar documents, including those
    referenced below.  Thanks go to the authors of those documents.
@@ -381,18 +366,6 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
               Ounsworth, M. and M. Pala, "Composite Keys and Signatures
               For Use In Internet PKI", draft-ounsworth-pq-composite-
               sigs-01 (work in progress), July 2019.
-
-
-
-
-
-
-
-
-Ounsworth               Expires February 24, 2020               [Page 7]
-
-Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
-
 
    [I-D.truskovsky-lamps-pq-hybrid-x509]
               Truskovsky, A., Geest, D., Fluhrer, S., Kampanakis, P.,
@@ -407,6 +380,20 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
 
 Author's Address
 
+
+
+
+
+
+
+
+
+
+Ounsworth               Expires February 24, 2020               [Page 7]
+
+Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
+
+
    Mike Ounsworth
    Entrust Datacard Limited
    1000 Innovation Drive
@@ -414,6 +401,19 @@ Author's Address
    Canada
 
    Email: mike.ounsworth@entrustdatacard.com
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

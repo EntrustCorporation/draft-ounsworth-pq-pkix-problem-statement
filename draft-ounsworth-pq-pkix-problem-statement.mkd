@@ -178,32 +178,14 @@ None of these solution families are a panacea. Multi-cert looks preferable for o
 
 # Intellectual Property Considerations
 
-The authors are aware that Massimiliano Pala and CableLabs have applied for Intellectual Property Rights around composite key, signatures, and certificates. We have a verbal agreement with Max that this IP will
-be made freely available to the community.
+Hybrid certificates, specifically [draft-truskovsky-lamps-pq-hybrid-x509] has IPR held by ISARA.
 
-As of this version of the draft, the authors have reviewed and provided feedback on the March 24, 2019 version of the IPR disclosure, available at  https://datatracker.ietf.org/ipr/3481/, and are awaiting the posting of an updated version that covers this draft.
-
-EDNOTE: remove this section once the IPR disclosure is posted and tagged against this draft.
-
-<!-- Keep it here only for reference, in case it is needed
-## Comparison with draft-truskovsky-lamps-pq-hybrid-x509
-EDNOTE: This section will explain the differences from {{I-D.truskovsky-lamps-pq-hybrid-x509}}.
--->
-<!-- End of Comparison with draft-truskovsky-lamps-pq-hybrid-x509 section -->
+Composite certificates, specifically [draft-ounsworth-pq-composite-sigs] has IPR held by Max Pala and CableLabs, but with open license terms, available at  https://datatracker.ietf.org/ipr/3481/, and are awaiting the posting of an updated version that covers this draft.
 
 
 # Contributors and Acknowledgements
-This document incorporates contributions and comments from a large group of experts. The Editors would especially like to acknowledge the expertise and tireless dedication of the following people, who attended many long meetings and generated millions of bytes of electronic mail and VOIP traffic over the past year in pursuit of this document:
 
-John Gray (Entrust Datacard),
-Serge Mister (Entrust Datacard),
-Scott Fluhrer (Cisco Systems),
-Panos Kampanakis (Cisco Systems),
-Daniel Van Geest (ISARA), and
-Tim Hollebeek (Digicert).
-
-We are grateful to all, including any contributors who may have
-been inadvertently omitted from this list.
+This document incorporates contributions and comments from a large group of experts, including the authors list of [draft-ounsworth-pq-composite-sigs] and hallway chats at IETF105 and other crypto conferences.
 
 This document borrows text from similar documents, including those referenced below. Thanks go to the authors of those
    documents.  "Copying always makes things easier and less error prone" - [RFC8411].
