@@ -1,8 +1,8 @@
 ---
-title: Post-quantum Multi-Key Signature Mechanisms in PKIX; Problem Statement and Overview of Solution Space
+title: Post-quantum Multi-Key Certificate Mechanisms in PKIX; Problem Statement and Overview of Solution Space
 abbrev: PQ PKIX Sigs Problem Statement
 # <!-- EDNOTE: Edits the draft name -->
-docname: draft-ounsworth-pq-pkix-problem-statement-00
+docname: draft-pq-pkix-problem-statement-00
 # <!-- date: 2012-01-13 -->
 # <!-- date: 2012-01 -->
 # <!-- date: 2012 -->
@@ -56,9 +56,9 @@ informative:
 
 --- abstract
 
-With the widespread adoption of post-quantum (PQ) cryptography will come uncertainty about the cryptographic strength of cryptographic primitives (When will RSA and ECC fall? are Lattice schemes as strong as we believe?). The community is calling for hybrid schemes that combine classic and post-quantum crypto in ways that force the attacker to break both (or all) of the algorithms used.
+With the widespread adoption of post-quantum (PQ) cryptography will come uncertainty about the strength of cryptographic primitives. For example; when will RSA and ECC fall? Are Lattice schemes as strong as we believe? The cryptographic community is calling for hybrid schemes that combine classic and post-quantum crypto in ways that remain strong so long as at least one of the algorithms used remains strong.
 
-This document defines the problem statement for digital signatures in PKIX protocols, and gives an overview of the general solution space at the current time.
+This document defines the problem statement for digital signatures in PKIX protocols, and gives an overview of the general families of solutions.
 
 <!-- End of Abstract -->
 
@@ -84,7 +84,7 @@ A solution to the PQ multi-signature problem MAY meet the following "desirable" 
 
 - D1. The set of signing algorithms is negotiated dynamically between client and server.
 
-- D2. Since post-quantum public keys and signatures are large, they should only be sent when you know the client will verify them.
+- D2. Since post-quantum public keys and signatures are large, they should only be sent when you know the client will verify them. For bonus points, the protocol should control when and how the large PQ data is transmitted.
 
 - D3. Backwards compatibility: there is a mechanism either for the client to negotiate whether it wants multi-key signatures, or the signature mechanism is designed in such a way that a legacy verifier will ignore the PQ parts.
 
@@ -134,17 +134,20 @@ Pros:
 Cons:
 
 - D1: Does not apply well to negotiated protocols; at least not without an exponential proliferation of certificates on every combination of algorithms.
-- D2: Large PQ data is sent to the client whether or not they will use it.
 - D3: May be too backwards-compatible; in a large PKI deployment, it is very hard to be know if/when clients are all using the PQ data.
 - D4: Requires updates to all protocols to add or specify the behaviour of multiple SignatureAlgorithm and SignatureValue fields.
 - D5: Hard to extend to 3 or more keys + signatures.
-
-This family of solutions has been instantiated in [draft-truskovsky-lamps-pq-hybrid-x509], and has a related standard currently before the ITU.
 
 
 Neutral:
 
 - S1 & S2: Substitution and stripping attacks; if an attacker can break the outer signature (assumed to be RSA for backwards compatibility reasons), then they can strip out the PQ extension and re-generate the outer signature. This can be mitigated by requiring that a hybrid CA always produces hybrid certificates using the same algorithms. A verifier can check against their local trust store to see that the EndEntity certificate contains the same algorithms as its root.
+- D2: Large PQ data is always sent to the client. This can be either viewed as a bad thing (bandwidth) or a good thing (protect data now, patch clients later).
+
+
+
+
+This family of solutions has been instantiated in [draft-truskovsky-lamps-pq-hybrid-x509-01], and has a related standard currently before the ITU.
 
 
 ## "Composite" concatenated keys and signatures
@@ -166,10 +169,11 @@ Cons:
 Neutral:
 
 - S1 & S2: Substitution and stripping attacks; if an attacker can break one or more of the signature algorithms, then they can strip out the other algorithmIDs and re-generate the signatures they have broken. This can be mitigated by requiring that a composite public key produces signatures using all keys. A verifier can check against their local trust store to see that the EndEntity certificate contains the same algorithms as its issuer.
+- D2: Large PQ data is always sent to the client. This can be either viewed as a bad thing (bandwidth) or a good thing (protect data now, patch clients later).
 
 
 
-This family of solutions has been instantiated in [draft-ounsworth-pq-composite-sigs].
+This family of solutions has been instantiated in [draft-ounsworth-pq-composite-sigs-01].
 
 
 # Conclusion
@@ -178,14 +182,14 @@ None of these solution families are a panacea. Multi-cert looks preferable for o
 
 # Intellectual Property Considerations
 
-Hybrid certificates, specifically [draft-truskovsky-lamps-pq-hybrid-x509] has IPR held by ISARA.
+Hybrid certificates, specifically [draft-truskovsky-lamps-pq-hybrid-x509-01] has IPR held by ISARA.
 
-Composite certificates, specifically [draft-ounsworth-pq-composite-sigs] has IPR held by Max Pala and CableLabs, but with open license terms, available at  https://datatracker.ietf.org/ipr/3481/, and are awaiting the posting of an updated version that covers this draft.
+Composite certificates, specifically [draft-ounsworth-pq-composite-sigs-01] has IPR held by Max Pala and CableLabs, but with open license terms, available at  https://datatracker.ietf.org/ipr/3481/, and are awaiting the posting of an updated version that covers this draft.
 
 
 # Contributors and Acknowledgements
 
-This document incorporates contributions and comments from a large group of experts, including the authors list of [draft-ounsworth-pq-composite-sigs] and hallway chats at IETF105 and other crypto conferences.
+This document incorporates contributions and comments from a large group of experts, including the authors list of [draft-ounsworth-pq-composite-sigs-01] and hallway chats at IETF105 and other crypto conferences.
 
 This document borrows text from similar documents, including those referenced below. Thanks go to the authors of those
    documents.  "Copying always makes things easier and less error prone" - [RFC8411].

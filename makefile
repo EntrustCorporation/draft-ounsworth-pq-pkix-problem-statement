@@ -1,19 +1,19 @@
 
-docName = draft-ounsworth-pq-pkix-problem-statement
+docName = draft-pq-pkix-problem-statement
 
 
 default: all
 
 txt: $(docName).txt
 
-draft-ounsworth-pq-pkix-problem-statement.txt: $(docName).mkd
+draft-pq-pkix-problem-statement.txt: $(docName).mkd
 	kdrfc $(docName).mkd
 
 
 
 xml: $(docName).xml
 
-draft-ounsworth-pq-pkix-problem-statement.xml: $(docName).mkd
+draft-pq-pkix-problem-statement.xml: $(docName).mkd
 	 kramdown-rfc2629 $(docName).mkd > $(docName).xml
 
 
