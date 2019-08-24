@@ -118,7 +118,7 @@ Pros:
 Cons:
 
 - S1 & S2: Unclear how this applies to non-negotiated protocols.
-- S1 and S2: mitigation against stripping and substitution attacks is left up to the protocol, and is easy to get wrong. Possibly some kind of extension could be placed in root CA certs to indicate which "sister PKIs" a verifier can expect to see, but such a solution would be fairly complex.
+- S1 & S2: mitigation against stripping and substitution attacks is left up to the protocol, and is easy to get wrong. Possibly some kind of extension could be placed in root CA certs to indicate which "sister PKIs" a verifier can expect to see, but such a solution would be fairly complex.
 - D4: Requires updates to all protocols to add or specify the behaviour of multiple SignatureAlgorithm and SignatureValue fields.
 - D6: Will have compatibility issues with applications such as smart cards that are limited to a single signing certificate.
 
@@ -167,7 +167,7 @@ Pros:
 
 Cons:
 
-- D1: Does not apply well to negotiated protocols, at least not without a quadratic or exponential proliferation of certificates using every combination of algorithms (possibly equip servers with two certificates: a high-security certificate, and a high-compatibility one). Another option is to allow servers to perform signatures with a subset of keys in the certificate, or allow clients to selectively ignore some signatures. Note that this opens up a complex verification algorithm which makes it very difficult to detect stripping attacks. So this is probably not a good idea.
+- D1: Does not apply well to negotiated protocols, at least not without a quadratic or exponential proliferation of certificates using every combination of algorithms (possibly equip servers with two certificates: a high-security certificate, and a high-compatibility one). Another option is to allow servers to perform signatures with a subset of keys in the certificate, or allow clients to selectively ignore some signatures. Note that this requires a complex verification algorithm which is easy to mis-implement, and makes it very difficult to detect stripping attacks. So this is probably not a good direction to go.
 - D2: All public keys and signatures are contained in the certificate, and therefore need to be transferred.
 - D3: Is not immediately backwards-compatible since clients need to be patched to understand the composite message structures and OID. But once that's done the verification algorithm can be designed to skip unknown algorithmIDs (this is not unique to this scheme, and violates D2, but it's possible *shrug*).
 - Policy moved to crypto layer; protocol can not (easily) be negotiate the algorithms, or control what counts as an "acceptable" combination of algorithms.
