@@ -71,13 +71,13 @@ Table of Contents
    1.  Problem Statement . . . . . . . . . . . . . . . . . . . . . .   2
      1.1.  Formal Security Requirements  . . . . . . . . . . . . . .   2
    2.  Solution Space  . . . . . . . . . . . . . . . . . . . . . . .   3
-     2.1.  Multiple Certificates . . . . . . . . . . . . . . . . . .   3
-     2.2.  "Hybrid" v3 extensions  . . . . . . . . . . . . . . . . .   4
-     2.3.  "Composite" concatenated keys and signatures  . . . . . .   5
-   3.  Conclusion  . . . . . . . . . . . . . . . . . . . . . . . . .   6
+     2.1.  Multiple Certificates . . . . . . . . . . . . . . . . . .   4
+     2.2.  "Hybrid" v3 extensions  . . . . . . . . . . . . . . . . .   5
+     2.3.  "Composite" concatenated keys and signatures  . . . . . .   6
+   3.  Conclusion  . . . . . . . . . . . . . . . . . . . . . . . . .   7
    4.  Intellectual Property Considerations  . . . . . . . . . . . .   7
-   5.  Contributors and Acknowledgements . . . . . . . . . . . . . .   7
-   6.  Informative References  . . . . . . . . . . . . . . . . . . .   7
+   5.  Contributors and Acknowledgements . . . . . . . . . . . . . .   8
+   6.  Informative References  . . . . . . . . . . . . . . . . . . .   8
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Problem Statement
@@ -123,7 +123,11 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
    o  D2.  Since post-quantum public keys and signatures are large, they
       should only be sent when you know the client will verify them.
       For bonus points, the protocol should control when and how the
-      large PQ data is transmitted.
+      large PQ data is transmitted.  Note that all three schemes could
+      include a hash and external delivery of the large post-quantum
+      data (for example, HTTP URL, delivered via protocol extension,
+      etc).  Since this trick is orthogonal to and applies equally to
+      all three schemes, it is not considered here.
 
    o  D3.  Backwards compatibility: there is a mechanism either for the
       client to negotiate whether it wants multi-key signatures, or the
@@ -142,6 +146,10 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
       a set of public keys / signatures to continue being used so long
       as there remain an acceptable number of un-broken algorithms.
 
+   o  D6.  Some applications may be limited to a single signing
+      certificate and/or key without significant redesign (for example
+      smart cards).
+
 2.  Solution Space
 
    At the time of writing, there are three broad families of solutions
@@ -153,6 +161,15 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
    Each solution space is described below.  I am trying to keep these
    abstract and not solution-specific.
 
+
+
+
+
+Ounsworth               Expires February 24, 2020               [Page 3]
+
+Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
+
+
 2.1.  Multiple Certificates
 
    If you want multiple public keys on multiple cryptographic
@@ -162,13 +179,6 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
    obvious solution.
 
    Pros:
-
-
-
-Ounsworth               Expires February 24, 2020               [Page 3]
-
-Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
-
 
    o  D1: Highly friendly to negotiated protocols since it allows the
       server to sign a transaction with the combination of algorithms
@@ -206,6 +216,16 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
       behaviour of multiple SignatureAlgorithm and SignatureValue
       fields.
 
+   o  D6: Will have compatibility issues with applications such as smart
+      cards that are limited to a single signing certificate.
+
+
+
+Ounsworth               Expires February 24, 2020               [Page 4]
+
+Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
+
+
    At time of writing, I am not aware of any internet drafts or other
    implementations of this family of solutions.
 
@@ -218,22 +238,19 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
 
    Pros:
 
-
-
-
-Ounsworth               Expires February 24, 2020               [Page 4]
-
-Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
-
-
    o  D3: Highly backwards compatible; if the PQ extension(s) are marked
       as non-critical, then legacy clients will ignore the PQ data and
       verify the "outer" signature as normal.
 
+   o  D6: Single certificate should be compatible with applications such
+      as smart cards whose architectures limit them to a single
+      certificate.  Though API / communication with the card would need
+      to support two signatures or challenge-responses.
+
    Cons:
 
    o  D1: Does not apply well to negotiated protocols; at least not
-      without an exponential proliferation of certificates on every
+      without a quadratic proliferation of certificates on every
       combination of algorithms.
 
    o  D3: May be too backwards-compatible; in a large PKI deployment, it
@@ -243,18 +260,30 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
       behaviour of multiple SignatureAlgorithm and SignatureValue
       fields.
 
-   o  D5: Hard to extend to 3 or more keys + signatures.
+   o  D5: Does not extend to 3 or more keys + signatures on its own, but
+      could be used in combination with the "composite" solution to do
+      so.
 
    Neutral:
 
    o  S1 & S2: Substitution and stripping attacks; if an attacker can
       break the outer signature (assumed to be RSA for backwards
-      compatibility reasons), then they can strip out the PQ extension
-      and re-generate the outer signature.  This can be mitigated by
-      requiring that a hybrid CA always produces hybrid certificates
-      using the same algorithms.  A verifier can check against their
-      local trust store to see that the EndEntity certificate contains
-      the same algorithms as its root.
+      compatibility reasons), then they can strip or substitute the PQ
+      extension and re-generate the outer signature.  This can be
+      mitigated by requiring that a hybrid CA containing an alt public
+      key always produces hybrid certificates containing a corresponding
+      alt signature.  When building a certificate chain, a verifier can
+
+
+
+
+Ounsworth               Expires February 24, 2020               [Page 5]
+
+Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
+
+
+      check that alt signatures are present and valid all the way down
+      the certificate chain.
 
    o  D2: Large PQ data is always sent to the client.  This can be
       either viewed as a bad thing (bandwidth) or a good thing (protect
@@ -275,13 +304,6 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
       layer supports the composite primitive, then the protocol only
       needs to add support for the composite algorithmID.
 
-
-
-Ounsworth               Expires February 24, 2020               [Page 5]
-
-Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
-
-
    o  D5: Trivially extends to 3 or more algorithms.
 
    o  Complexity of composite signature generation and verification is
@@ -292,15 +314,36 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
       to the application layer, for example, through config files or
       APIs.
 
+   o  D6: - D6: Single certificate and key object should be a near drop-
+      in replacement for applications such as smart cards whose
+      architectures limit them to a single certificate.
+
    Cons:
 
-   o  D1 & D2: Does not apply well to negotiated protocols; at least not
-      without an exponential proliferation of certificates on every
-      combination of algorithms.
+   o  D1: Does not apply well to negotiated protocols, at least not
+      without a quadratic or exponential proliferation of certificates
+      using every combination of algorithms (possibly equip servers with
+      two certificates: a high-security certificate, and a high-
+      compatibility one).  Another option is to allow servers to perform
+      signatures with a subset of keys in the certificate, or allow
+      clients to selectively ignore some signatures.  Note that this
+      opens up a complex verification algorithm which makes it very
+      difficult to detect stripping attacks.  So this is probably not a
+      good idea.
+
+
+
+Ounsworth               Expires February 24, 2020               [Page 6]
+
+Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
+
+
+   o  D2: All public keys and signatures are contained in the
+      certificate, and therefore need to be transferred.
 
    o  D3: Is not immediately backwards-compatible since clients need to
-      be patched to understand the composite message structures.  But
-      once that's done the verification algorithm can be designed to
+      be patched to understand the composite message structures and OID.
+      But once that's done the verification algorithm can be designed to
       skip unknown algorithmIDs (this is not unique to this scheme, and
       violates D2, but it's possible _shrug_).
 
@@ -330,14 +373,6 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
    None of these solution families are a panacea.  Multi-cert looks
    preferable for online negotiated protocols, hybrid looks preferable
    for environments with strong backwards compatibility requirements for
-
-
-
-Ounsworth               Expires February 24, 2020               [Page 6]
-
-Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
-
-
    legacy clients, and composite looks preferable for controlled
    environments where you know the clients will support the composite
    message format.
@@ -345,13 +380,19 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
 4.  Intellectual Property Considerations
 
    Hybrid certificates, specifically [draft-truskovsky-lamps-pq-hybrid-
-   x509-01] has IPR held by ISARA.
+   x509-01] has IPR held by ISARA which has an IPR statement available
+   at https://datatracker.ietf.org/ipr/3287/.
 
    Composite certificates, specifically [draft-ounsworth-pq-composite-
    sigs-01] has IPR held by Max Pala and CableLabs, but with open
-   license terms, available at https://datatracker.ietf.org/ipr/3481/,
-   and are awaiting the posting of an updated version that covers this
-   draft.
+   license terms, available at https://datatracker.ietf.org/ipr/3481/.
+
+
+
+Ounsworth               Expires February 24, 2020               [Page 7]
+
+Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
+
 
 5.  Contributors and Acknowledgements
 
@@ -383,17 +424,6 @@ Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
               RFC 8411, DOI 10.17487/RFC8411, August 2018,
               <https://www.rfc-editor.org/info/rfc8411>.
 
-
-
-
-
-
-
-Ounsworth               Expires February 24, 2020               [Page 7]
-
-Internet-Draft       PQ PKIX Sigs Problem Statement          August 2019
-
-
 Author's Address
 
    Mike Ounsworth
@@ -403,36 +433,6 @@ Author's Address
    Canada
 
    Email: mike.ounsworth@entrustdatacard.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

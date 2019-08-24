@@ -84,13 +84,15 @@ A solution to the PQ multi-signature problem MAY meet the following "desirable" 
 
 - D1. The set of signing algorithms is negotiated dynamically between client and server.
 
-- D2. Since post-quantum public keys and signatures are large, they should only be sent when you know the client will verify them. For bonus points, the protocol should control when and how the large PQ data is transmitted.
+- D2. Since post-quantum public keys and signatures are large, they should only be sent when you know the client will verify them. For bonus points, the protocol should control when and how the large PQ data is transmitted. Note that all three schemes could include a hash and external delivery of the large post-quantum data (for example, HTTP URL, delivered via protocol extension, etc). Since this trick is orthogonal to and applies equally to all three schemes, it is not considered here.
 
 - D3. Backwards compatibility: there is a mechanism either for the client to negotiate whether it wants multi-key signatures, or the signature mechanism is designed in such a way that a legacy verifier will ignore the PQ parts.
 
 - D4. Protocol compatibility: a multi-key solution should "drop-in" to existing protocol message formats. For example, a solution where any PKIX-like protocol simply needs to pick up new OIDs with no other code changes would meet this property. Note that this conflicts with D2 which (probably) requires protocol-level awareness of the multiple keys.
 
 - D5. A mechanism that supports 3 or more algorithms is desirable to hedge our bets against algorithm compromise; possibly allowing a set of public keys / signatures to continue being used so long as there remain an acceptable number of un-broken algorithms.
+
+- D6. Some applications may be limited to a single signing certificate and/or key without significant redesign (for example smart cards).
 
 
 
@@ -118,6 +120,7 @@ Cons:
 - S1 & S2: Unclear how this applies to non-negotiated protocols.
 - S1 and S2: mitigation against stripping and substitution attacks is left up to the protocol, and is easy to get wrong. Possibly some kind of extension could be placed in root CA certs to indicate which "sister PKIs" a verifier can expect to see, but such a solution would be fairly complex.
 - D4: Requires updates to all protocols to add or specify the behaviour of multiple SignatureAlgorithm and SignatureValue fields.
+- D6: Will have compatibility issues with applications such as smart cards that are limited to a single signing certificate.
 
 
 At time of writing, I am not aware of any internet drafts or other implementations of this family of solutions.
@@ -130,18 +133,19 @@ Place the PQ data into X.509v3 extensions. This has two general forms; the "PQ e
 Pros:
 
 - D3: Highly backwards compatible; if the PQ extension(s) are marked as non-critical, then legacy clients will ignore the PQ data and verify the "outer" signature as normal.
+- D6: Single certificate should be compatible with applications such as smart cards whose architectures limit them to a single certificate. Though API / communication with the card would need to support two signatures or challenge-responses.
 
 Cons:
 
-- D1: Does not apply well to negotiated protocols; at least not without an exponential proliferation of certificates on every combination of algorithms.
+- D1: Does not apply well to negotiated protocols; at least not without a quadratic proliferation of certificates on every combination of algorithms.
 - D3: May be too backwards-compatible; in a large PKI deployment, it is very hard to be know if/when clients are all using the PQ data.
 - D4: Requires updates to all protocols to add or specify the behaviour of multiple SignatureAlgorithm and SignatureValue fields.
-- D5: Hard to extend to 3 or more keys + signatures.
+- D5: Does not extend to 3 or more keys + signatures on its own, but could be used in combination with the “composite” solution to do so.
 
 
 Neutral:
 
-- S1 & S2: Substitution and stripping attacks; if an attacker can break the outer signature (assumed to be RSA for backwards compatibility reasons), then they can strip out the PQ extension and re-generate the outer signature. This can be mitigated by requiring that a hybrid CA always produces hybrid certificates using the same algorithms. A verifier can check against their local trust store to see that the EndEntity certificate contains the same algorithms as its root.
+- S1 & S2: Substitution and stripping attacks; if an attacker can break the outer signature (assumed to be RSA for backwards compatibility reasons), then they can strip or substitute the PQ extension and re-generate the outer signature. This can be mitigated by requiring that a hybrid CA containing an alt public key always produces hybrid certificates containing a corresponding alt signature. When building a certificate chain, a verifier can check that alt signatures are present and valid all the way down the certificate chain.
 - D2: Large PQ data is always sent to the client. This can be either viewed as a bad thing (bandwidth) or a good thing (protect data now, patch clients later).
 
 
@@ -159,11 +163,13 @@ Pros:
 - D4: "Drop-in" to most protocols because once the underlying crypto layer supports the composite primitive, then the protocol only needs to add support for the composite algorithmID.
 - D5: Trivially extends to 3 or more algorithms.
 - Complexity of composite signature generation and verification is moved to crypto layer, and therefore protocol designers and implementers do not need to worry about it. Note this is also a con, see below. Crypto layer maintainers have control of which combinations of algorithms are acceptable. This could be exposed to the application layer, for example, through config files or APIs.
+- D6: - D6: Single certificate and key object should be a near drop-in replacement for applications such as smart cards whose architectures limit them to a single certificate.
 
 Cons:
 
-- D1 & D2: Does not apply well to negotiated protocols; at least not without an exponential proliferation of certificates on every combination of algorithms.
-- D3: Is not immediately backwards-compatible since clients need to be patched to understand the composite message structures. But once that's done the verification algorithm can be designed to skip unknown algorithmIDs (this is not unique to this scheme, and violates D2, but it's possible *shrug*).
+- D1: Does not apply well to negotiated protocols, at least not without a quadratic or exponential proliferation of certificates using every combination of algorithms (possibly equip servers with two certificates: a high-security certificate, and a high-compatibility one). Another option is to allow servers to perform signatures with a subset of keys in the certificate, or allow clients to selectively ignore some signatures. Note that this opens up a complex verification algorithm which makes it very difficult to detect stripping attacks. So this is probably not a good idea.
+- D2: All public keys and signatures are contained in the certificate, and therefore need to be transferred.
+- D3: Is not immediately backwards-compatible since clients need to be patched to understand the composite message structures and OID. But once that's done the verification algorithm can be designed to skip unknown algorithmIDs (this is not unique to this scheme, and violates D2, but it's possible *shrug*).
 - Policy moved to crypto layer; protocol can not (easily) be negotiate the algorithms, or control what counts as an "acceptable" combination of algorithms.
 
 Neutral:
@@ -182,9 +188,9 @@ None of these solution families are a panacea. Multi-cert looks preferable for o
 
 # Intellectual Property Considerations
 
-Hybrid certificates, specifically [draft-truskovsky-lamps-pq-hybrid-x509-01] has IPR held by ISARA.
+Hybrid certificates, specifically [draft-truskovsky-lamps-pq-hybrid-x509-01] has IPR held by ISARA which has an IPR statement available at https://datatracker.ietf.org/ipr/3287/.
 
-Composite certificates, specifically [draft-ounsworth-pq-composite-sigs-01] has IPR held by Max Pala and CableLabs, but with open license terms, available at  https://datatracker.ietf.org/ipr/3481/, and are awaiting the posting of an updated version that covers this draft.
+Composite certificates, specifically [draft-ounsworth-pq-composite-sigs-01] has IPR held by Max Pala and CableLabs, but with open license terms, available at  https://datatracker.ietf.org/ipr/3481/.
 
 
 # Contributors and Acknowledgements
